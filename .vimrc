@@ -10,6 +10,7 @@ set viminfo='20,<50,s10,h,! " YankRing用に!を追加
 set shellslash              " Windowsでディレクトリパスの区切り文字に / を使えるようにする
 set lazyredraw              " マクロなどを実行中は描画を中断
 set complete+=k             " 補完に辞書ファイル追加
+set shell=~/system/bin/zsh
 
 
 "--------------------------------------------------------------"
@@ -53,7 +54,7 @@ NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'ujihisa/unite-locate'
 NeoBundle 'tpope/vim-surround'
-NeoBundle 'taglist.vim'
+"NeoBundle 'taglist.vim'
 NeoBundle 'ZenCoding.vim'
 NeoBundle 'The-NERD-tree'
 NeoBundle 'The-NERD-Commenter'
@@ -77,15 +78,15 @@ NeoBundle 'mattn/emmet-vim'
 NeoBundle 'grep.vim'
 NeoBundle 't9md/vim-quickhl'
 NeoBundle 'Shougo/vimfiler.vim'
-NeoBundle 'Shougo/vimproc.vim', {
-\ 'build' : {
-\     'windows' : 'tools\\update-dll-mingw',
-\     'cygwin' : 'make -f make_cygwin.mak',
-\     'mac' : 'make -f make_mac.mak',
-\     'linux' : 'make',
-\     'unix' : 'gmake',
-\    },
-\ }
+"NeoBundle 'Shougo/vimproc.vim', {
+"\ 'build' : {
+"\     'windows' : 'tools\\update-dll-mingw',
+"\     'cygwin' : 'make -f make_cygwin.mak',
+"\     'mac' : 'make -f make_mac.mak',
+"\     'linux' : 'make',
+"\     'unix' : 'gmake',
+"\    },
+"\ }
 
 " ColorSheme
 NeoBundle 'w0ng/vim-hybrid'
@@ -237,12 +238,7 @@ syntax on " シンタックスカラーリングオン
 
 " カラースキーム
 set t_Co=256
-try
-    let g:hybrid_use_Xresources = 1
-    colorscheme hybrid
-catch /^Vim\%((\a\+)\)\=:E185/
-    colorscheme desert
-endtry
+colorscheme desert
 
 " 行番号のハイライト
 set cursorline

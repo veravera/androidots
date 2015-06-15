@@ -12,6 +12,15 @@ HISTSIZE=10000                    # メモリ内の履歴の数
 SAVEHIST=100000                   # 保存される履歴の数
 LISTMAX=1000                      # 補完リストを尋ねる数 (1=黙って表示, 0=ウィンドウから溢れるときは尋ねる)
 
+fpath=(
+    $SYS/share/zsh/5.0.2/functions
+    $SYS/share/zsh/site-functions
+)
+
+# GRML configuration - grml.org/zsh
+source $SYS/etc/grmlrc
+{ test -r ~/.grml.conf } && { source ~/.grml.conf }
+
 # root のコマンドはヒストリに追加しない
 if [ $UID = 0 ]; then
     unset HISTFILE
@@ -55,7 +64,7 @@ export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 #--------------------------------------------------------------#
 ###     antigen     ###
 if [ -f ~/.zshrc.antigen ]; then
-    source ~/.zshrc.antigen
+#    source ~/.zshrc.antigen
 fi
 
 
@@ -94,7 +103,7 @@ function rprompt-git-current-branch {
 
 ###     cd      ###
 function cd() {
-    builtin cd "$@" && ls -F --show-control-char --color=auto
+    builtin cd "$@" && ls -F  --color=auto
 }
 
 ###     history     ###
@@ -239,7 +248,8 @@ autoload run-help
 ##          Prompt Configuration                              ##
 #--------------------------------------------------------------#
 # 左プロンプト
-PROMPT='[%n@%m:%.`rprompt-git-current-branch`]${WINDOW:+"[$WINDOW]"}%# '
+PROMPT='[%.`rprompt-git-current-branch`]${WINDOW:+"[$WINDOW]"}%# '
+
 
 ## <エスケープシーケンス>
 ## prompt_bang が有効な場合、!=現在の履歴イベント番号, !!='!' (リテラル)
@@ -298,8 +308,8 @@ PROMPT='[%n@%m:%.`rprompt-git-current-branch`]${WINDOW:+"[$WINDOW]"}%# '
 # $の後はシェル変数／環境変数がマッチ(compinit しなくてもできますが)
 # - 動的補完 : w3m, gcc 等に応じたファイルのみが補完される
 autoload -U compinit
-#compinit -u
-compinit
+compinit -u
+#compinit
 
 zstyle ':completion:*' list-colors ${LS_COLORS} # 補完候補を色分け (GNU ls の色定義を流用)
 zstyle ':completion:*' special-dirs true
@@ -321,7 +331,6 @@ zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 # sudoコマンドを補完する
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
-# 特定のコマンドの補完を無効にする
 #compdef -d w3m
 # あるコマンドの補完を他のコマンドのように補完する (platex も latex と同じ)
 #compdef _tex platex
@@ -335,7 +344,7 @@ stty    intr    '^C'        # Ctrl+C に割り込み
 stty    susp    '^Z'        # Ctrl+Z にサスペンド
 bindkey "^?"    backward-delete-char
 bindkey "^H"    backward-delete-char
-bindkey "^[[3~" delete-char
+bindkey "[3~" delete-char
 bindkey "[3;5~" delete-word
 bindkey "^[[1~" beginning-of-line
 bindkey "^[[4~" end-of-line
@@ -396,12 +405,12 @@ bindkey '^x^p' predict-off
 ##          Options                                           ##
 #--------------------------------------------------------------#
 setopt prompt_subst          # プロンプトに escape sequence (環境変数) を通す
-unsetopt promptcr            # 改行のない出力をプロンプトで上書きするのを防ぐ
-#  autoload -U colors        # プロンプトのカラー表示を有効
-#  colors                    # → 色指定  $fg[色名]/$bg[色名]/$reset_color (${, $} で囲む必要がある)
-#                            #            30黒 31赤 32緑 33黄 34青 35紫 36水 37白
+#unsetopt promptcr            # 改行のない出力をプロンプで上書きするのを防ぐ
+##  autoload -U colors        # プロンプトのカラー表示を効
+#  colors                    # → 色指定  $fg[色名]/$bg[ 名]/$reset_color (${, $} で囲む必要がある)
+#                            #            30黒 31赤 32緑3黄 34青 35紫 36水 37白
 setopt nonomatch # wild card extended
-#setopt extended_history      # 履歴ファイルに開始時刻と経過時間を記録
+#setopt extended_history      # 履歴ファイルに開始時刻と過時間を記録
 unsetopt extended_history
 setopt append_history        # 履歴を追加 (毎回 .zhistory を作るのではなく)
 setopt inc_append_history    # 履歴をインクリメンタルに追加
@@ -410,8 +419,8 @@ setopt hist_ignore_all_dups  # 重複するコマンド行は古い方を削除
 setopt hist_ignore_dups      # 直前と同じコマンドラインはヒストリに追加しない
 setopt hist_ignore_space     # スペースで始まるコマンド行はヒストリリストから削除
                              # (→ 先頭にスペースを入れておけば、ヒストリに保存されない)
-unsetopt hist_verify         # ヒストリを呼び出してから実行する間に一旦編集可能を止める
-#setopt hist_reduce_blanks    # 余分な空白は詰めて記録<-teratermで履歴かおかしくなる
+setopt hist_verify         # ヒストリを呼び出してから実行する間に一旦編集可能を止める
+setopt hist_reduce_blanks    # 余分な空白は詰めて記録<-teratermで履歴かおかしくなる
 setopt hist_save_no_dups     # ヒストリファイルに書き出すときに、古いコマンドと同じものは無視する。
 setopt hist_no_store         # historyコマンドは履歴に登録しない
 
@@ -561,11 +570,11 @@ alias -g H='| head'
 alias -g T='| tail'
 
 # ls
-alias la='ls -aF --show-control-char --color=always'
-alias lla='ls -alF --show-control-char --color=always'
-alias lal='ls -alF --show-control-char --color=always'
-alias ls='ls --show-control-char --color=always'
-alias ll='ls -l --show-control-char --color=always'
+alias la='ls -aF  --color=always'
+alias lla='ls -alF  --color=always'
+alias lal='ls -alF  --color=always'
+alias ls='ls --color=always'
+alias ll='ls -l  --color=always'
 alias l.='ls -d .[a-zA-Z]* --color=always'
 
 # chmod
@@ -587,4 +596,22 @@ fi
 if [ -f "$HOME/.tmuxinator/tmuxinator.zsh" ];then
     source $HOME/.tmuxinator/tmuxinator.zsh
 fi
+
+
+
+# Vim configuration
+export VIMRUNTIME=${SYS}/share/vim/vim73
+
+# Midnight commander
+alias mc='mc -aX' # correct rendering
+
+# Lynx web browser
+alias lynx="lynx -cfg ${SYS}/etc/lynx.cfg -lss ${SYS}/etc/lynx.lss"
+
+# System wide fine tuning
+{ test -f $SYS/etc/zenv } && { source $SYS/etc/zenv }
+
+# Custom user configuration
+{ test -r ~/.profile } && { source ~/.profile }
+
 
