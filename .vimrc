@@ -28,7 +28,7 @@ endfunction
 " Note: Skip initialization for vim-tiny or vim-small.
 " 使用するプロトコルを変更する
 let g:neobundle_default_git_protocol='https'
- 
+
 if !1 | finish | endif
 
 if has('vim_starting')
@@ -48,10 +48,9 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 NeoBundle 'rails.vim'
 NeoBundle 'SrcExpl'
 NeoBundle 'Trinity'
-NeoBundle 'Rip-Rip/clang_complete'
+NeoBundle 'justmao945/vim-clang'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'Shougo/unite.vim'
 NeoBundle 'ujihisa/unite-locate'
 NeoBundle 'tpope/vim-surround'
 "NeoBundle 'taglist.vim'
@@ -70,29 +69,45 @@ NeoBundle 'open-browser.vim'
 NeoBundle 'troydm/easybuffer.vim'
 NeoBundle 'vim-scripts/sudo.vim'
 NeoBundle 'LeafCage/yankround.vim'
-" ibus 制御
-NeoBundle 'fuenor/im_control.vim.git'
+NeoBundle 'bronson/vim-trailing-whitespace'
+NeoBundle 'yegappan/mru'
+NeoBundle 'Lokaltog/vim-easymotion'
+NeoBundle 'terryma/vim-expand-region'
+NeoBundle 'fuenor/im_control.vim'  " ibus 制御
 NeoBundle 'violetyk/cake.vim'
-NeoBundle 'Townk/vim-autoclose'
+" 補完時のESCと干渉するため Raimondi/delimitMateに乗り換え
+"NeoBundle 'Townk/vim-autoclose'
+NeoBundle 'Raimondi/delimitMate'
+NeoBundle 'fidian/hexmode'
+NeoBundle 'tpope/vim-endwise', {
+\ 'autoload' : { 'insert' : 1,}
+\ }
 NeoBundle 'mattn/emmet-vim'
 NeoBundle 'grep.vim'
 NeoBundle 't9md/vim-quickhl'
-NeoBundle 'Shougo/vimfiler.vim'
-"NeoBundle 'Shougo/vimproc.vim', {
-"\ 'build' : {
-"\     'windows' : 'tools\\update-dll-mingw',
-"\     'cygwin' : 'make -f make_cygwin.mak',
-"\     'mac' : 'make -f make_mac.mak',
-"\     'linux' : 'make',
-"\     'unix' : 'gmake',
-"\    },
-"\ }
+NeoBundleLazy 'junegunn/vim-easy-align', {
+  \ 'autoload': {
+  \   'commands' : ['EasyAlign'],
+  \   'mappings' : ['<Plug>(EasyAlign)'],
+  \ }}
+NeoBundleLazy "Shougo/unite.vim", {
+\   'autoload' : {
+\       'commands' : [ "Unite" ]
+\   }
+\}
+NeoBundleLazy 'Shougo/vimfiler', {
+\   'depends' : ["Shougo/unite.vim"],
+\   'autoload' : {
+\       'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer" ]
+\   }
+\}
 
 " ColorSheme
 NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'tomasr/molokai'
 NeoBundle 'nanotech/jellybeans.vim'
-
+"NeoBundle 'bling/vim-airline'
+NeoBundle 'itchyny/lightline.vim'
 
 if s:meet_neocomplete_requirements()
     NeoBundle 'Shougo/neocomplete.vim'
@@ -102,17 +117,16 @@ else
     NeoBundle 'Shougo/neocomplcache.vim'
 endif
 
-"NeoBundle 'jelera/vim-javascript-syntax'
-"NeoBundle 'YankRing.vim'
 
-"neocomplcacheと併用できないため
-"NeoBundle 'Shougo/neocomplcache-clang'
+"NeoBundle 'jelera/vim-javascript-syntax'
 
 " YankRing と重複
 "NeoBundle 'ctrlp.vim'
+"NeoBundle 'YankRing.vim'
 
 " neocomplcache と競合
 "NeoBundle 'AutoComplPop'
+"NeoBundle 'Shougo/vimproc'
 
 " インデックス範囲外のエラーが出る
 "NeoBundle 'ref.vim'
@@ -167,7 +181,6 @@ set hidden     " 編集中でも他のファイルを開けるようにする
 " OSのクリップボードを使う
 " +レジスタ：Ubuntuの[Ctrl-v]で貼り付けられるもの unnamedplus
 " *レジスタ：マウス中クリックで貼り付けられるもの unnamed
-" set clipboard=unnamed
 set clipboard=unnamedplus
 
 " ビープ音除去
@@ -209,7 +222,7 @@ else
   set statusline+=%t    " ファイル名のみ
 endif
   set statusline+=%=    " 左寄せ項目と右寄せ項目の区切り
-  set statusline+=%{exists('g:loaded_fugitive')?fugitive#statusline():''} " Gitのブランチ名を表示
+  set statusline+=%{exists('g:loaded_fugitive')?fugitive#statusline():''} " Gitブランチ名を表示
   set statusline+=\ \   " 空白スペース2個
   set statusline+=%1l   " 何行目にカーソルがあるか
   set statusline+=/
@@ -238,16 +251,21 @@ syntax on " シンタックスカラーリングオン
 
 " カラースキーム
 set t_Co=256
-colorscheme desert
+try
+    let g:hybrid_use_Xresources = 1
+    colorscheme hybrid
+catch /^Vim\%((\a\+)\)\=:E185/
+    colorscheme desert
+endtry
 
 " 行番号のハイライト
 set cursorline
 hi clear CursorLine
 
 " ポップアップメニューの色変える
-highlight Pmenu ctermbg=lightcyan ctermfg=black 
-highlight PmenuSel ctermbg=blue ctermfg=black 
-highlight PmenuSbar ctermbg=darkgray 
+highlight Pmenu ctermbg=lightcyan ctermfg=black
+highlight PmenuSel ctermbg=blue ctermfg=black
+highlight PmenuSbar ctermbg=darkgray
 highlight PmenuThumb ctermbg=lightgray
 
 " 読み取り専用をわかりやすく
@@ -256,7 +274,6 @@ function! CheckRo()
     colorscheme morning
   endif
 endfunction
-au BufReadPost * call CheckRo()
 
 
 "--------------------------------------------------------------"
@@ -283,32 +300,37 @@ nnoremap Y y$
 noremap + <C-a>
 noremap - <C-x>
 
+vmap <Leader>y "+y
+vmap <Leader>d "+d
+nmap <Leader>p "+p
+nmap <Leader>P "+P
+vmap <Leader>p "+p
+vmap <Leader>P "+P
+nmap <Leader><Leader> V
+
+" xでの削除はレジスタに登録しない
+nnoremap x "_x
 
 "--------------------------------------------------------------"
 "          autocmd                                             "
 "--------------------------------------------------------------"
 if has('autocmd')
+  augroup CheckRo
+    autocmd! CheckRo
+    autocmd BufReadPost * call CheckRo()
+  augroup END
   " Put these in an autocmd group, so that we can delete them easily.
   augroup vimrcEx
     autocmd! vimrcEx
-  
+
     " 前回終了したカーソル行に移動
     autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
     " ======== Undo ======== "
     " アンドゥ
     if has('persistent_undo')
       set undodir=./.vimundo,~/.vim/vimundo
-    "    autocmd BufReadPre ~/* setlocal undofile
         autocmd BufRead ~/* setlocal undofile
     endif
-    " ======== バイナリモード ======== "
-    "バイナリ編集(xxd)モード（vim -b での起動、もしくは *.bin ファイルを開くと発動します）
-    autocmd BufReadPre  *.bin let &binary =1
-    autocmd BufReadPost * if &binary | silent %!xxd -g 1
-    autocmd BufReadPost * set ft=xxd | endif
-    autocmd BufWritePre * if &binary | %!xxd -r | endif
-    autocmd BufWritePost * if &binary | silent %!xxd -g 1
-    autocmd BufWritePost * set nomod | endif
   augroup END
 endif
 
@@ -316,35 +338,33 @@ endif
 "--------------------------------------------------------------"
 "          Special Configuration                                   "
 "--------------------------------------------------------------"
-
-" ======== 自動貼り付け設定 ======== "
+" ======== 貼り付け設定 ======== "
 if &term =~ "xterm" || &term =~ "screen"
   function! WrapForTmux(s)
     if !exists('$TMUX')
       return a:s
     endif
-  
+
     let tmux_start = "\<Esc>Ptmux;"
     let tmux_end = "\<Esc>\\"
-  
+
     return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
   endfunction
-  
+
   let &t_SI .= WrapForTmux("\<Esc>[?2004h")
   let &t_EI .= WrapForTmux("\<Esc>[?2004l")
-  
+
   function! XTermPasteBegin(ret)
     set pastetoggle=<Esc>[201~
     set paste
     return a:ret
   endfunction
-  
+
   inoremap <special> <expr> <Esc>[200~ XTermPasteBegin("")
-  
   " ノーマルモードはオフする
-  " noremap <special> <expr> <Esc>[200~ XTermPasteBegin("0i")
-  " cnoremap <special> <Esc>[200~ <nop>
-  " cnoremap <special> <Esc>[201~ <nop>
+  "noremap <special> <expr> <Esc>[200~ XTermPasteBegin("0i")
+  "cnoremap <special> <Esc>[200~ <nop>
+  "cnoremap <special> <Esc>[201~ <nop>
 endif
 
 " ======== 強制保存 ======== "
@@ -360,11 +380,11 @@ if has('mouse')
       augroup MyAutoCmd
           autocmd VimLeave * :set mouse=
        augroup END
-   
+
       " screenでマウスを使用するとフリーズするのでその対策
       set ttymouse=xterm2
   endif
-   
+
   if has('gui_running')
       " Show popup menu if right click.
       set mousemodel=popup
@@ -379,9 +399,10 @@ endif
 "--------------------------------------------------------------"
 "          Plugin Settings                                     "
 "--------------------------------------------------------------"
-" ======== neocomplete ======== " 
+" ======== neocomplete ======== "
 if s:meet_neocomplete_requirements()
-    "Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
+    " 新しく追加した neocomplete の設定
+    ""Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
     " Disable AutoComplPop.
     let g:acp_enableAtStartup = 0
     " Use neocomplete.
@@ -413,9 +434,9 @@ if s:meet_neocomplete_requirements()
     " <CR>: close popup and save indent.
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     function! s:my_cr_function()
-      return neocomplete#close_popup() . "\<CR>"
+      "return neocomplete#close_popup() . "\<CR>"
       " For no inserting <CR> key.
-      "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+      return pumvisible() ? neocomplete#close_popup() : "\<CR>"
     endfunction
     " <TAB>: completion.
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -464,26 +485,33 @@ if s:meet_neocomplete_requirements()
     " For perlomni.vim setting.
     " https://github.com/c9s/perlomni.vim
     let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+    "
 else
-    " ======== neocomplcache ======== "
+
+" ======== neocomplcache ======== "
     let g:neocomplcache_enable_at_startup = 1
     let g:neocomplcache_max_list = 30
     let g:neocomplcache_auto_completion_start_length = 2
     let g:neocomplcache_enable_smart_case = 1
+
 endif
 
-" ======== unite ======== " 
-let g:unite_enable_start_insert = 1
+" ======== unite ======== "
+let s:bundle = neobundle#get('unite.vim')
+function! s:bundle.hooks.on_post_source(bundle)
+let g:unite_enable_start_insert=1
 let g:unite_source_file_mru_limit = 200
+endfunction
+unlet s:bundle
 
-" ======== Trinity ======== " 
-nmap <F8>   :TrinityToggleAll<CR> 
-nmap <F9>   :TrinityToggleSourceExplorer<CR> 
-nmap <F10>  :TrinityToggleTagList<CR> 
-nmap <F11>  :TrinityToggleNERDTree<CR> 
+" ======== Trinity ======== "
+nmap <F8>   :TrinityToggleAll<CR>
+nmap <F9>   :TrinityToggleSourceExplorer<CR>
+nmap <F10>  :TrinityToggleTagList<CR>
+nmap <F11>  :TrinityToggleNERDTree<CR>
 nmap <C-j> <C-]>
 
-" ======== yankround ======== " 
+" ======== yankround ======== "
 nmap p <Plug>(yankround-p)
 xmap p <Plug>(yankround-p)
 nmap P <Plug>(yankround-P)
@@ -496,21 +524,21 @@ let g:yankround_max_history = 100
 let g:yankround_dir = '~/.cache/yankround'
 nnoremap <silent>g<C-p> :<C-u>CtrlPYankRound<CR>
 
-" ======== SrcExpl ======== " 
+" ======== SrcExpl ======== "
 let Tlist_Exit_OnlyWindow = 1
-nmap <F8> :SrcExplToggle<CR> 
-let g:SrcExpl_winHeight = 8 
-let g:SrcExpl_refreshTime = 2000 
-let g:SrcExpl_gobackKey = "<SPACE>" 
-let g:SrcExpl_pluginList = [ 
-        \ "__Tag_List__", 
-        \ "_NERD_tree_", 
-        \ "Source_Explorer" 
-    \ ] 
-let g:SrcExpl_searchLocalDef = 1 
+nmap <F8> :SrcExplToggle<CR>
+let g:SrcExpl_winHeight = 8
+let g:SrcExpl_refreshTime = 2000
+let g:SrcExpl_gobackKey = "<SPACE>"
+let g:SrcExpl_pluginList = [
+        \ "__Tag_List__",
+        \ "_NERD_tree_",
+        \ "Source_Explorer"
+    \ ]
+let g:SrcExpl_searchLocalDef = 1
 let g:SrcExpl_isUpdateTags = 0
-let g:SrcExpl_updateTagsKey = "<F12>" 
-let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase -R ." 
+let g:SrcExpl_updateTagsKey = "<F12>"
+let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase -R ."
 
 " ======== cscope  ======== "
 if has("cscope")
@@ -521,7 +549,7 @@ if has("cscope")
   " add any database in current directory
   if filereadable("cscope.out")
     cs add cscope.out
-  " else add database pointed to by environment 
+  " else add database pointed to by environment
   elseif $CSCOPE_DB != ""
     cs add $CSCOPE_DB
   endif
@@ -529,26 +557,13 @@ if has("cscope")
   set cscopequickfix=s-,c-,d-,i-,t-,e-
 endif
 
-" ======== Taglist ======== " 
+" ======== Taglist ======== "
 let Tlist_Show_One_File = 1                   " 現在表示中のファイルのみのタグしか表示しない
 let Tlist_Exit_OnlyWindow = 1                 " taglistのウインドウだけならVimを閉じる
 
-" ======== clang ---------- "
-" neocomplcache 側の設定
-let g:neocomplcache_force_overwrite_completefunc=1
-
-if !exists("g:neocomplcache_force_omni_patterns")
-    let g:neocomplcache_force_omni_patterns = {}
-endif
-
-" omnifunc が呼び出される場合の正規表現パターンを設定しておく
-let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|::'
-
-
-" clang_complete 側の設定
-" clang_complete の自動呼び出しは必ず切っておいて下さい
-" これを設定しておかなければ補完がおかしくなります
-let g:clang_complete_auto=0
+" ======== clang ======== "
+let g:clang_c_options = '-std=c11'
+let g:clang_cpp_options = '-std=c++1z -stdlib=libc++ --pedantic-errors'
 
 " ======== quickrun ======== "
 set splitbelow "新しいウィンドウを下に開く
@@ -569,7 +584,11 @@ let IM_CtrlIBusPython = 1
 set timeout timeoutlen=3000 ttimeoutlen=10
 
 " ======== Vimfiler ======== "
+let s:bundle = neobundle#get('vimfiler')
+function! s:bundle.hooks.on_post_source(bundle)
 let g:vimfiler_as_default_explorer = 1
+endfunction
+unlet s:bundle
 
 " ======== vim-quickhl ======== "
 nmap <Space>m <Plug>(quickhl-manual-this)
@@ -581,4 +600,220 @@ nmap <Space>j <Plug>(quickhl-cword-toggle)
 nmap <Space>] <Plug>(quickhl-tag-toggle)
 map H <Plug>(operator-quickhl-manual-this-motion)
 
+" ======== vim-expand-region ======== "
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
+
+" ======== vim-easy-align ======== "
+let s:bundle = neobundle#get('vim-easy-align')
+function! s:bundle.hooks.on_post_source(bundle)
+" Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
+vmap <Enter> <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+endfunction
+unlet s:bundle
+
+" ======== The-NERD-Commenter ======== "
+let NERDSpaceDelims = 1
+let NERDShutUp = 1
+
+" ======== vim-easymotion ======== "
+" Disable default mappings
+" If you are true vimmer, you should explicitly map keys by yourself.
+" Do not rely on default bidings.
+let g:EasyMotion_do_mapping = 0
+
+" Or map prefix key at least(Default: <Leader><Leader>)
+" map <Leader> <Plug>(easymotion-prefix)
+
+" Jump to anywhere you want by just `4` or `3` key strokes without thinking!
+" `s{char}{char}{target}`
+nmap s <Plug>(easymotion-s2)
+xmap s <Plug>(easymotion-s2)
+omap z <Plug>(easymotion-s2)
+" Of course, you can map to any key you want such as `<Space>`
+" map <Space>(easymotion-s2)
+
+" Turn on case sensitive feature
+let g:EasyMotion_smartcase = 1
+
+" `JK` Motions: Extend line motions
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+" keep cursor column with `JK` motions
+let g:EasyMotion_startofline = 0
+
+let g:EasyMotion_keys='hjklasdfgyuiopqwertnmzxcvbHJKLASDFGYUIOPQWERTNMZXCVB'
+" Show target key with upper case to improve readability
+let g:EasyMotion_use_upper = 1
+" Jump to first match with enter & space
+let g:EasyMotion_enter_jump_first = 1
+let g:EasyMotion_space_jump_first = 1
+
+" Extend search motions with vital-over command line interface
+" Incremental highlight of all the matches
+" Now, you don't need to repetitively press `n` or `N` with EasyMotion feature
+" `<Tab>` & `<S-Tab>` to scroll up/down a page with next match
+" :h easymotion-command-line
+nmap g/ <Plug>(easymotion-sn)
+xmap g/ <Plug>(easymotion-sn)
+omap g/ <Plug>(easymotion-tn)
+
+" 1 ストローク選択を優先する
+let g:EasyMotion_grouping=1
+
+" カラー設定変更
+hi EasyMotionTarget ctermbg=none ctermfg=red
+hi EasyMotionShade  ctermbg=none ctermfg=blue
+
+" jamessan's
+"set statusline=   " clear the statusline for when vimrc is reloaded
+"set statusline+=%-3.3n\                      " buffer number
+"set statusline+=%f\                          " file name
+"set statusline+=%h%m%r%w                     " flags
+"set statusline+=[%{strlen(&ft)?&ft:'none'},  " filetype
+"set statusline+=%{strlen(&fenc)?&fenc:&enc}, " encoding
+"set statusline+=%{&fileformat}]              " file format
+"set statusline+=%=                           " right align
+"set statusline+=%{synIDattr(synID(line('.'),col('.'),1),'name')}\  " highlight
+"set statusline+=%b,0x%-8B\                   " current char
+"set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
+
+
+" ======== lightline ======== "
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+      \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+      \ },
+      \ 'component_function': {
+      \   'fugitive': 'MyFugitive',
+      \   'filename': 'MyFilename',
+      \   'fileformat': 'MyFileformat',
+      \   'filetype': 'MyFiletype',
+      \   'fileencoding': 'MyFileencoding',
+      \   'mode': 'MyMode',
+      \   'ctrlpmark': 'CtrlPMark',
+      \ },
+      \ 'component_expand': {
+      \   'syntastic': 'SyntasticStatuslineFlag',
+      \ },
+      \ 'component_type': {
+      \   'syntastic': 'error',
+      \ },
+      \ 'subseparator': { 'left': '|', 'right': '|' }
+      \ }
+
+function! MyModified()
+  return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+endfunction
+
+function! MyReadonly()
+  return &ft !~? 'help' && &readonly ? 'RO' : ''
+endfunction
+
+function! MyFilename()
+  let fname = expand('%:t')
+  return fname == 'ControlP' ? g:lightline.ctrlp_item :
+        \ fname == '__Tagbar__' ? g:lightline.fname :
+        \ fname =~ '__Gundo\|NERD_tree' ? '' :
+        \ &ft == 'vimfiler' ? vimfiler#get_status_string() :
+        \ &ft == 'unite' ? unite#get_status_string() :
+        \ &ft == 'vimshell' ? vimshell#get_status_string() :
+        \ ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
+        \ ('' != fname ? fname : '[No Name]') .
+        \ ('' != MyModified() ? ' ' . MyModified() : '')
+endfunction
+
+function! MyFugitive()
+  try
+    if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
+      let mark = ''  " edit here for cool mark
+      let _ = fugitive#head()
+      return strlen(_) ? mark._ : ''
+    endif
+  catch
+  endtry
+  return ''
+endfunction
+
+function! MyFileformat()
+  return winwidth(0) > 70 ? &fileformat : ''
+endfunction
+
+function! MyFiletype()
+  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+endfunction
+
+function! MyFileencoding()
+  return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+endfunction
+
+function! MyMode()
+  let fname = expand('%:t')
+  return fname == '__Tagbar__' ? 'Tagbar' :
+        \ fname == 'ControlP' ? 'CtrlP' :
+        \ fname == '__Gundo__' ? 'Gundo' :
+        \ fname == '__Gundo_Preview__' ? 'Gundo Preview' :
+        \ fname =~ 'NERD_tree' ? 'NERDTree' :
+        \ &ft == 'unite' ? 'Unite' :
+        \ &ft == 'vimfiler' ? 'VimFiler' :
+        \ &ft == 'vimshell' ? 'VimShell' :
+        \ winwidth(0) > 60 ? lightline#mode() : ''
+endfunction
+
+function! CtrlPMark()
+  if expand('%:t') =~ 'ControlP'
+    call lightline#link('iR'[g:lightline.ctrlp_regex])
+    return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
+          \ , g:lightline.ctrlp_next], 0)
+  else
+    return ''
+  endif
+endfunction
+
+let g:ctrlp_status_func = {
+  \ 'main': 'CtrlPStatusFunc_1',
+  \ 'prog': 'CtrlPStatusFunc_2',
+  \ }
+
+function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
+  let g:lightline.ctrlp_regex = a:regex
+  let g:lightline.ctrlp_prev = a:prev
+  let g:lightline.ctrlp_item = a:item
+  let g:lightline.ctrlp_next = a:next
+  return lightline#statusline(0)
+endfunction
+
+function! CtrlPStatusFunc_2(str)
+  return lightline#statusline(0)
+endfunction
+
+let g:tagbar_status_func = 'TagbarStatusFunc'
+
+function! TagbarStatusFunc(current, sort, fname, ...) abort
+    let g:lightline.fname = a:fname
+  return lightline#statusline(0)
+endfunction
+
+augroup AutoSyntastic
+  autocmd! AutoSyntastic
+  autocmd BufWritePost *.c,*.cpp call s:syntastic()
+augroup END
+function! s:syntastic()
+  SyntasticCheck
+  call lightline#update()
+endfunction
+
+let g:unite_force_overwrite_statusline = 0
+let g:vimfiler_force_overwrite_statusline = 0
+let g:vimshell_force_overwrite_statusline = 0
+
+" ======== vim-trailing-whitespace ======== "
+augroup TrailWhiteSpace
+  autocmd! TrailWhiteSpace
+  autocmd BufWritePre * :FixWhitespace
+augroup END
 
