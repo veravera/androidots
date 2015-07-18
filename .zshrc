@@ -405,7 +405,7 @@ bindkey '^x^p' predict-off
 ##          Options                                           ##
 #--------------------------------------------------------------#
 setopt prompt_subst          # プロンプトに escape sequence (環境変数) を通す
-#unsetopt promptcr            # 改行のない出力をプロンプで上書きするのを防ぐ
+unsetopt promptcr            # 改行のない出力をプロンプで上書きするのを防ぐ
 ##  autoload -U colors        # プロンプトのカラー表示を効
 #  colors                    # → 色指定  $fg[色名]/$bg[ 名]/$reset_color (${, $} で囲む必要がある)
 #                            #            30黒 31赤 32緑3黄 34青 35紫 36水 37白
@@ -419,8 +419,8 @@ setopt hist_ignore_all_dups  # 重複するコマンド行は古い方を削除
 setopt hist_ignore_dups      # 直前と同じコマンドラインはヒストリに追加しない
 setopt hist_ignore_space     # スペースで始まるコマンド行はヒストリリストから削除
                              # (→ 先頭にスペースを入れておけば、ヒストリに保存されない)
-setopt hist_verify         # ヒストリを呼び出してから実行する間に一旦編集可能を止める
-setopt hist_reduce_blanks    # 余分な空白は詰めて記録<-teratermで履歴かおかしくなる
+unsetopt hist_verify         # ヒストリを呼び出してから実行する間に一旦編集可能を止める
+#setopt hist_reduce_blanks    # 余分な空白は詰めて記録<-teratermで履歴かおかしくなる
 setopt hist_save_no_dups     # ヒストリファイルに書き出すときに、古いコマンドと同じものは無視する。
 setopt hist_no_store         # historyコマンドは履歴に登録しない
 
@@ -468,7 +468,7 @@ setopt short_loops           # FOR, REPEAT, SELECT, IF, FUNCTION などで簡略
 setopt auto_name_dirs
 #setopt sun_keyboard_hack     # SUNキーボードでの頻出 typo ` をカバーする
 setopt always_last_prompt    # カーソル位置は保持したままファイル名一覧を順次その場で表示
-setopt cdable_vars 
+setopt cdable_vars
 unsetopt sh_word_split
 
 setopt auto_pushd            # 普通に cd するときにもディレクトリスタックにそのディレクトリを入れる
@@ -529,7 +529,7 @@ alias pictex='dvips -Ppdf -E -D 600 -Z'
 # application
 # vi
 #alias vi='vi -i NONE'
-alias vi='vim' 
+alias vi='vim'
 alias v='vim'
 alias sv='sudo vi'
 
